@@ -28,13 +28,13 @@ $ docker run --rm --privileged \
   -e GIT_USER_NAME=jfloff \
   -e GIT_USER_EMAIL=jfloff@inesc-id.pt \
   -e DEVICE_CODENAME=klte \
-  -ti jfloff/lineageos lineageos init build
+  -ti vrestihnat/lineageos lineageos init build
 
 # or pass a custom .env file
 $ docker run --rm --privileged \
   -v "$(pwd)/android":/home/lineageos \
   --env-file custom.env
-  -ti jfloff/lineageos lineageos init build
+  -ti vrestihnat/lineageos lineageos init build
 ```
 
 
@@ -68,7 +68,7 @@ $ docker run --rm --privileged \
   -e GIT_USER_NAME=jfloff \
   -e GIT_USER_EMAIL=jfloff@inesc-id.pt \
   -e DEVICE_CODENAME=klte \
-  -ti jfloff/lineageos lineageos init build
+  -ti vrestihnat/lineageos lineageos init build
 ```
 
 Instead of settings multiple env variables, you can also pass an env-file (as per [docker run reference](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e-env-env-file)).
@@ -76,7 +76,7 @@ Instead of settings multiple env variables, you can also pass an env-file (as pe
 $ docker run --rm --privileged \
   -v "$(pwd)/android":/home/lineageos \
   --env-file custom.env
-  -ti jfloff/lineageos lineageos init build
+  -ti vrestihnat/lineageos lineageos init build
 ```
 
 Note that we ran `lineageos init build` which is our custom script that is used to help init, sync and build LineageOS from within the container. Check `lineageos` script details below.
