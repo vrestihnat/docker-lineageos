@@ -44,3 +44,6 @@ alias ls='ls --color'
 
 # add a alias so source is done automagically
 alias lineageos='source /bin/lineageos'
+
+
+export LC_ALL=C

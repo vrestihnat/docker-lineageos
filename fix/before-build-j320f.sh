@@ -1,0 +1,3 @@
+#!/bin/bash
+
+cd $BASE_DIR/device/samsung/sharkls-common/patches && ./apply_sprd-diff.sh && cd $BASE_DIR

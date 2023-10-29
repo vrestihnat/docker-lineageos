@@ -1,5 +1,9 @@
-FROM eclipse-temurin:8-jammy
-LABEL maintainer="jfloff@inesc-id.pt"
+
+FROM eclipse-temurin:8-focal
+
+
+ARG LOS_USER="lineageos"
+ARG LOS_UID=1000
 
 ###################
 # This Dockerfile was based on the following Dockerfiles
@@ -8,7 +12,8 @@ LABEL maintainer="jfloff@inesc-id.pt"
 #
 
 # default user
-ENV USER=lineageos
+ENV USER=${LOS_USER}
+
 ENV \
     # base dir
     BASE_DIR=/home/$USER \
@@ -58,6 +63,7 @@ RUN set -ex ;\
           zlib1g-dev \
           # extra packages
           # for repo
+          python2 \
           python3 \
           # for repo
           openssh-client \
@@ -82,7 +88,7 @@ RUN set -ex ;\
 RUN set -ex ;\
     # User setup
     # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-    groupadd -r lineageos && useradd -r -g lineageos lineageos && usermod -u 1000 lineageos ;\
+    groupadd -r lineageos && useradd -r -g lineageos $LOS_USER && usermod -u $LOS_UID $USER ;\
     # allow non-root user to remount fs
     # adding ALL permissions so they can do other stuff in the future, like sudo vim
     echo "lineageos ALL=NOPASSWD: ALL" >> /etc/sudoers ;\
@@ -96,7 +102,19 @@ RUN set -ex ;\
     # https://gerrit.googlesource.com/git-repo/+/master/subcmds/init.py#328
     git config --global color.ui true ;\
     # source init when any bash is called (which includes the lineageos script)
-    echo "source /etc/profile.d/init.sh" >> /etc/bash.bashrc
+    echo "source /etc/profile.d/init.sh" >> /etc/bash.bashrc ;
+
+ARG PYTHON=3
+
+RUN set -ex ;\
+    if [ "x$PYTHON" = "x2" ]; then \
+     sed -i 's/\/usr\/bin\/env\ python/\/usr\/bin\/env\ python3/' /usr/bin/repo ;\
+     rm -f /usr/bin/python && ln -s /usr/bin/python2 /usr/bin/python ;\
+    fi
+
+RUN set -ex ;\
+    sed -i 's/TLSv1,//g'   /opt/java/openjdk/jre/lib/security/java.security ;\
+    sed -i 's/TLSv1.1,//g'   /opt/java/openjdk/jre/lib/security/java.security
 
 # copy default configuration into container
 COPY default.env init.sh /etc/profile.d/
@@ -104,6 +122,8 @@ COPY default.env init.sh /etc/profile.d/
 COPY lineageos /bin
 # copy dir with several PRed device configurations
 COPY device-config $DEVICE_CONFIGS_DIR
+
+COPY fix /fix
 
 # set volume and user home folder
 RUN mkdir -p "$BASE_DIR" && chown "$USER:$USER" "$BASE_DIR"
